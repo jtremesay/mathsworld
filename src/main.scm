@@ -119,5 +119,5 @@
             (ctx (canvas_node.getContext "2d")))
         (begin
             (print s)
-            (render-scene s canvas ctx)
+            (render-scene s canvas_node ctx)
             )))
