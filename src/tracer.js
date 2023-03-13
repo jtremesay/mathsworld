@@ -18,26 +18,12 @@ struct Material {
     float specular;
 };
 
-struct Sphere {
-    vec3 position;
-    float radius;
-    Material material;
-};
-
 struct Hit {
     vec3 position;
     vec3 normal;
     float distance;
     Material material;
 };
-
-Hit sdf_union(Hit a, Hit b) {
-    if (a.distance <= b.distance) {
-        return a;
-    } else {
-        return b;
-    };
-}
 
 const Hit NO_HIT = Hit(
     vec3(INFINITY, INFINITY, INFINITY),
@@ -48,6 +34,14 @@ const Hit NO_HIT = Hit(
         0.0
     )
 );
+
+Hit sdf_union(Hit a, Hit b) {
+    if (a.distance <= b.distance) {
+        return a;
+    } else {
+        return b;
+    };
+}
 
 Hit sdf_sphere(vec3 camera, vec3 ray, vec3 position, float radius, Material material) {
     vec3 co = camera - position;
@@ -75,55 +69,6 @@ Hit sdf_sphere(vec3 camera, vec3 ray, vec3 position, float radius, Material mate
         d,
         material
     );
-}
-
-float directional_light(float intensity, vec3 direction, vec3 normal, float specular, vec3 inverse_direction) {
-    // Diffuse
-    float n_dot_l = dot(normal, direction);
-    float i = 0.0;
-    if (n_dot_l > 0.0) {
-        i += intensity * n_dot_l / (length(normal) * length(direction));
-    }
-
-    // Specular
-    if (specular > -1.0) {
-        vec3 r = normal * n_dot_l * 2.0 - direction;
-        float r_dot_v = dot(r, inverse_direction);
-        if (r_dot_v > 0.0) {
-            i += intensity * pow((r_dot_v / (length(r) * length(inverse_direction))), specular);
-        }
-    }
-
-    return i;
-}
-
-float compute_lights(vec3 position, vec3 normal, float specular, vec3 inverse_direction) {
-    float intensity = 0.0;
-
-    // AMBIANT LIGHTS BEGIN
-    intensity += 0.2;
-    // AMBIANT LIGHTS END
-
-    // OMNIDIRECTIONAL LIGHTS BEGIN
-    intensity += directional_light(
-        0.6, 
-        vec3(2.0, 1.0, 0.0) - position, 
-        normal, 
-        specular, 
-        inverse_direction
-    );
-    // OMNIDIRECTIONAL LIGHTS END
-
-    // DIRECTIONAL LIGHTS BEGIN
-    intensity += directional_light(
-        0.2, 
-        vec3(1.0, 4.0, 4.0), 
-        normal, 
-        specular, 
-        inverse_direction);
-    // DIRECTIONAL LIGHTS END
-
-    return intensity;
 }
 
 Hit scene(vec3 camera, vec3 direction) {
@@ -173,6 +118,61 @@ Hit scene(vec3 camera, vec3 direction) {
             )
         )
     );
+}
+
+float directional_light(float intensity, vec3 direction, vec3 position, vec3 normal, float specular, vec3 inverse_direction) {
+    if (scene(position, direction).distance < INFINITY) {
+        return 0.0;
+    }
+
+    // Diffuse
+    float n_dot_l = dot(normal, direction);
+    float i = 0.0;
+    if (n_dot_l > 0.0) {
+        i += intensity * n_dot_l / (length(normal) * length(direction));
+    }
+
+    // Specular
+    if (specular > -1.0) {
+        vec3 r = normal * n_dot_l * 2.0 - direction;
+        float r_dot_v = dot(r, inverse_direction);
+        if (r_dot_v > 0.0) {
+            i += intensity * pow((r_dot_v / (length(r) * length(inverse_direction))), specular);
+        }
+    }
+
+    return i;
+}
+
+float compute_lights(vec3 position, vec3 normal, float specular, vec3 inverse_direction) {
+    float intensity = 0.0;
+
+    // AMBIANT LIGHTS BEGIN
+    intensity += 0.2;
+    // AMBIANT LIGHTS END
+
+    // OMNIDIRECTIONAL LIGHTS BEGIN
+    intensity += directional_light(
+        0.6, 
+        vec3(2.0, 1.0, 0.0) - position, 
+        position,
+        normal, 
+        specular, 
+        inverse_direction
+    );
+    // OMNIDIRECTIONAL LIGHTS END
+
+    // DIRECTIONAL LIGHTS BEGIN
+    intensity += directional_light(
+        0.2, 
+        vec3(1.0, 4.0, 4.0), 
+        position,
+        normal, 
+        specular, 
+        inverse_direction);
+    // DIRECTIONAL LIGHTS END
+
+    return intensity;
 }
 
 void main() {
