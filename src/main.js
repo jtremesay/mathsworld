@@ -1,4 +1,9 @@
 function main() {
+    const scene_editor = document.getElementById("scene_editor")
+    const scene = Scene.load(scene_editor.value)
+    console.log(scene)
+
+
     const canvas = document.getElementById("canvas")
     const gl = canvas.getContext("webgl");
     if (gl === null) {
