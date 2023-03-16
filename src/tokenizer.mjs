@@ -32,7 +32,6 @@ export function* tokenize(stream, rules, eos_kind, skip_tokens) {
             continue
         }
 
-
         yield token
     }
 
