@@ -1,38 +1,38 @@
-(defparameter scene (Scene 
-    (Camera 
-        (Vector3 0 0 0) 
-        (Vector3 1 1 1)) 
-    (UnionSDF (list 
-        (SphereSDF 
-            (Vector3 0 -5001 0)
+(scene 
+    (camera 
+        (vector3 0 0 0) 
+        (vector3 1 1 1)) 
+    (union (list 
+        (sphere 
+            (vector3 0 -5001 0)
             5000
-            (Material 
+            (material 
                 (color 1 1 0)
                 1000)) 
-        (SphereSDF 
-            (Vector3 0 -1 3)
+        (sphere 
+            (vector3 0 -1 3)
             1
-            (Material 
+            (material 
                 (color 1 0 0)
                 500)) 
-        (SphereSDF 
-            (Vector3 2 0 4)
+        (sphere 
+            (vector3 2 0 4)
             1
-            (Material 
+            (material 
                 (color 0 0 1)
-                500)) 
-        (SphereSDF 
-            (Vector3 -2 0 4)
+                500))
+        (sphere 
+            (vector3 -2 0 4)
             1
-            (Material 
+            (material 
                 (color 0 1 0)
                 10)))) 
     (list 
-        (AmbiantLight
+        (ambiant_light
             0.2) 
-        (OmniDirectionalLight
+        (omni_directional_light
             0.6
-            (Vector3 2 1 0)) 
-        (DirectionalLight
+            (vector3 2 1 0)) 
+        (directional_light
             0.2
-            (Vector3 1 4 4)))))
+            (vector3 1 4 4))))

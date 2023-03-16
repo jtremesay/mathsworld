@@ -1,11 +1,4 @@
-const vsSource = `
-attribute vec4 aVertexPosition;
-void main() {
-    gl_Position = aVertexPosition;
-}
-`;
-
-const fsSource = `
+export const SCENE_SHADER_SOURCE = `
 precision highp float;
 uniform vec2 uResolution;
 
