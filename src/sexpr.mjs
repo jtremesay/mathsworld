@@ -125,7 +125,7 @@ export function parse_sexpr(sexpr) {
     let ll_ast = ll_parse(tokens, Symbol.S, PARSER_RULES, PARSER_TABLE)
     console.log("LL AST:", ll_ast)
 
-    // TODO: build S-expr AST
+    // Build S-expr AST
     let sexpr_ast = build_s(ll_ast)
     console.log("S-expr AST:", sexpr_ast)
 
