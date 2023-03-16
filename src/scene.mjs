@@ -1,6 +1,6 @@
 import { parse_sexpr } from "./sexpr.mjs";
 
-class Vector3 {
+export class Vector3 {
     constructor(x, y, z) {
         this.x = x
         this.y = y
@@ -16,7 +16,7 @@ class Vector3 {
     }
 }
 
-class Camera {
+export class Camera {
     constructor(position, view_port) {
         this.position = position
         this.view_port = view_port
@@ -30,7 +30,7 @@ class Camera {
     }
 }
 
-class Material {
+export class Material {
     constructor(color, specular) {
         this.color = color
         this.specular = specular
@@ -44,7 +44,7 @@ class Material {
     }
 }
 
-class Sphere {
+export class Sphere {
     constructor(position, radius, material) {
         this.position = position
         this.radius = radius
@@ -60,7 +60,7 @@ class Sphere {
     }
 }
 
-class Union {
+export class Union {
     constructor(nodes) {
         this.nodes = nodes
     }
@@ -70,7 +70,7 @@ class Union {
     }
 }
 
-function node_from_sexpr(sexpr) {
+export function node_from_sexpr(sexpr) {
     if (sexpr.identifier == "union") {
         return Union.from_sexpr(sexpr)
     } else {
@@ -78,7 +78,7 @@ function node_from_sexpr(sexpr) {
     }
 }
 
-class AmbiantLight {
+export class AmbiantLight {
     constructor(intensity) {
         this.intensity = intensity
     }
@@ -90,7 +90,7 @@ class AmbiantLight {
     }
 }
 
-class OmniDirectionalLight {
+export class OmniDirectionalLight {
     constructor(intensity, position) {
         this.intensity = intensity
 
@@ -104,7 +104,7 @@ class OmniDirectionalLight {
     }
 }
 
-class DirectionalLight {
+export class DirectionalLight {
     constructor(intensity, direction) {
         this.intensity = intensity
         this.direction = direction
@@ -118,7 +118,7 @@ class DirectionalLight {
     }
 }
 
-function light_from_sexpr(sexpr) {
+export function light_from_sexpr(sexpr) {
     if (sexpr.identifier == "ambiant_light") {
         return AmbiantLight.from_sexpr(sexpr)
     } else if (sexpr.identifier == "omni_directional_light") {
@@ -128,11 +128,11 @@ function light_from_sexpr(sexpr) {
     }
 }
 
-function lights_from_sexpr(sexpr) {
+export function lights_from_sexpr(sexpr) {
     return sexpr.args.map(light_from_sexpr)
 }
 
-class Scene {
+export class Scene {
     constructor(camera, root, lights) {
         this.camera = camera
         this.root = root

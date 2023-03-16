@@ -71,7 +71,7 @@ void main() {
             vertex_position: this.gl.getAttribLocation(this.program_info.program, "aVertexPosition"),
         }
         this.program_info.uniform_locations = {
-            resolution: this.gl.getUniformLocation(this.program_info.program, "uResolution"),
+            resolution: this.gl.getUniformLocation(this.program_info.program, "iResolution"),
         }
     }
 
