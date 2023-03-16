@@ -6,6 +6,7 @@ import { WebGLRender } from "./webgl.mjs";
 function main() {
     const canvas = document.getElementById("canvas")
     const scene_editor = document.getElementById("scene_editor")
+    const shader_editor = document.getElementById("shader_editor")
 
     // Create the render
     let webgl_renderer = new WebGLRender(canvas)
@@ -18,6 +19,7 @@ function main() {
 
         // Generate the shader
         let shader = generate_scene_shader(scene)
+        shader_editor.value = shader
         console.log("shader:", shader)
 
         // Compile the scene shader and draw it
