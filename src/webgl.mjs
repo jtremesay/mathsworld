@@ -79,19 +79,21 @@ void main() {
         this.gl.clearColor(1.0, 0.0, 1.0, 1.0);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.position_buffer);
-        this.gl.vertexAttribPointer(
-            this.program_info.attrib_locations.vertex_position,
-            2,
-            this.gl.FLOAT,
-            false,
-            0,
-            0
-        );
-        this.gl.enableVertexAttribArray(this.program_info.attrib_locations.vertex_position);
-        this.gl.useProgram(this.program_info.program);
-        this.gl.uniform2f(this.program_info.uniform_locations.resolution, this.canvas.width, this.canvas.width, 1.0);
+        if (this.program_info.program) {
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.position_buffer);
+            this.gl.vertexAttribPointer(
+                this.program_info.attrib_locations.vertex_position,
+                2,
+                this.gl.FLOAT,
+                false,
+                0,
+                0
+            );
+            this.gl.enableVertexAttribArray(this.program_info.attrib_locations.vertex_position);
+            this.gl.useProgram(this.program_info.program);
+            this.gl.uniform2f(this.program_info.uniform_locations.resolution, this.canvas.width, this.canvas.width, 1.0);
 
-        this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+            this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+        }
     }
 }
