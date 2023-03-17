@@ -15,12 +15,10 @@ function main() {
         // Load the scene
         const scene_text = scene_editor.value
         let scene = load_scene(scene_text)
-        console.log("scene:", scene)
 
         // Generate the shader
         let shader = generate_scene_shader(scene)
         shader_editor.value = shader
-        console.log("shader:", shader)
 
         // Compile the scene shader and draw it
         webgl_renderer.set_scene_shader(shader)
