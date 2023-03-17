@@ -1,3 +1,5 @@
 FROM nginx AS serve
-COPY src /usr/share/nginx/html/src
-COPY index.html /usr/share/nginx/html/index.html
+WORKDIR /usr/share/nginx/html
+COPY style style
+COPY src src
+COPY index.html index.html
