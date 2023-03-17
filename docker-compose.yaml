@@ -1,0 +1,19 @@
+version: "3.2"
+services:
+  mathsworld:
+    image: killruana/mathsworld
+    expose:
+      - 80
+    networks:
+      - traefik_public
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.mathsworld.rule=Host(`mathsworld.jtremesay.org`,`mathsworld.slaanesh.org`)
+      - traefik.http.routers.mathsworld.entrypoints=websecure
+      - traefik.http.services.mathsworld.loadbalancer.server.port=80
+      - traefik.http.routers.mathsworld.service=mathsworld
+      - traefik.http.routers.mathsworld.tls.certresolver=zerossl
+
+networks:
+  traefik_public:
+    external: true
