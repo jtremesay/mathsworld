@@ -1,4 +1,4 @@
-import { AmbiantLight, DirectionalLight, OmniDirectionalLight, Sphere, Union } from "./scene.mjs"
+import { AmbiantLight, DirectionalLight, OmniDirectionalLight, Sphere, Union } from "./scene.js"
 
 function str_vector3(v) {
     return `vec3(${v.x.toFixed(8)}, ${v.y.toFixed(8)}, ${v.z.toFixed(8)})`

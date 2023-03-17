@@ -1,6 +1,6 @@
-import { load_scene } from "./scene.mjs";
-import { generate_scene_shader } from "./shader.mjs"
-import { WebGLRender } from "./webgl.mjs";
+import { load_scene } from "./scene.js";
+import { generate_scene_shader } from "./shader.js"
+import { WebGLRender } from "./webgl.js";
 
 
 function main() {

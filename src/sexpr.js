@@ -1,5 +1,5 @@
-import { tokenize } from "./tokenizer.mjs"
-import { ll_parse } from "./ll_parser.mjs"
+import { tokenize } from "./tokenizer.js"
+import { ll_parse } from "./ll_parser.js"
 
 const TokenKind = {
     EOS: "EOS",
