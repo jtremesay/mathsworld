@@ -1,4 +1,4 @@
-import { parse_sexpr } from "./sexpr.js";
+import { parse_sexpr } from "./sexpr.js"
 
 export class Vector3 {
     constructor(x, y, z) {

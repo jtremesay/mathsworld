@@ -1,19 +1,16 @@
 function loadShader(gl, type, source) {
     const shader = gl.createShader(type);
-    gl.shaderSource(shader, source);
-    gl.compileShader(shader);
+    gl.shaderSource(shader, source)
+    gl.compileShader(shader)
 
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        gl.deleteShader(shader);
+        gl.deleteShader(shader)
         throw new Error(
             `An error occurred compiling the shaders: ${gl.getShaderInfoLog(shader)}`
-        );
-        gl.deleteShader(shader);
-
-        return null;
+        )
     }
 
-    return shader;
+    return shader
 }
 
 export class WebGLRender {
@@ -31,7 +28,7 @@ void main() {
         if (this.gl === null) {
             throw new Error(
                 "Unable to initialize WebGL. Your browser or machine may not support it."
-            );
+            )
         }
         this.program_info = {
             program: null,
@@ -39,10 +36,10 @@ void main() {
             f_shader: null
         }
 
-        this.position_buffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.position_buffer);
-        const positions = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0];
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(positions), this.gl.STATIC_DRAW);
+        this.position_buffer = this.gl.createBuffer()
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.position_buffer)
+        const positions = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0]
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(positions), this.gl.STATIC_DRAW)
     }
 
     set_scene_shader(source) {
@@ -76,11 +73,11 @@ void main() {
     }
 
     draw() {
-        this.gl.clearColor(1.0, 0.0, 1.0, 1.0);
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+        this.gl.clearColor(1.0, 0.0, 1.0, 1.0)
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT)
 
         if (this.program_info.program) {
-            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.position_buffer);
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.position_buffer)
             this.gl.vertexAttribPointer(
                 this.program_info.attrib_locations.vertex_position,
                 2,
@@ -88,12 +85,12 @@ void main() {
                 false,
                 0,
                 0
-            );
-            this.gl.enableVertexAttribArray(this.program_info.attrib_locations.vertex_position);
-            this.gl.useProgram(this.program_info.program);
-            this.gl.uniform2f(this.program_info.uniform_locations.resolution, this.canvas.width, this.canvas.width, 1.0);
+            )
+            this.gl.enableVertexAttribArray(this.program_info.attrib_locations.vertex_position)
+            this.gl.useProgram(this.program_info.program)
+            this.gl.uniform2f(this.program_info.uniform_locations.resolution, this.canvas.width, this.canvas.width, 1.0)
 
-            this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+            this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4)
         }
     }
 }
