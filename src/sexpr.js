@@ -1,8 +1,8 @@
 import { tokenize } from "./tokenizer.js"
-import { ll_parse } from "./ll_parser.js"
+import { LLGrammar, LLParser } from "./ll_parser.js"
 
 const TokenKind = {
-    EOS: "EOS",
+    EOS: "$",
     LPAR: "LPAR",
     RPAR: "RPAR",
     IDENTIFIER: "IDENTIFIER",
@@ -31,49 +31,15 @@ const Symbol = {
     ARG: "ARG",
 }
 
-// Rules :
-const PARSER_RULES = [
-    // 0. S ::= SEXPR $
-    [Symbol.S, [Symbol.SEXPR, Symbol.EOS]],
-    // 1. SEXPR ::= ( identifier ARGS )
-    [Symbol.SEXPR, [Symbol.LPAR, Symbol.IDENTIFIER, Symbol.ARGS, Symbol.RPAR]],
-    // 2. ARGS ::= ARG ARGS
-    [Symbol.ARGS, [Symbol.ARG, Symbol.ARGS]],
-    // 3. ARGS ::= ''
-    [Symbol.ARGS, []],
-    // 4. ARG ::= number
-    [Symbol.ARG, [Symbol.NUMBER]],
-    // 5. ARG ::= SEXPR
-    [Symbol.ARG, [Symbol.SEXPR]],
-]
-
-// Parser table
-// Built width https://www.cs.princeton.edu/courses/archive/spring20/cos320/LL1/
-//
-//       |  (  |  )  |  id | number
-// ------+-----+-----+-----+-------
-// S     |  0  |     |     |     
-// SEXPR |  1  |     |     |
-// ARGS  |  2  |  3  |     |  2
-// ARG   |  5  |     |     |  4
-//
-const PARSER_TABLE = {
-    [Symbol.S]: {
-        [Symbol.LPAR]: 0,
-    },
-    [Symbol.SEXPR]: {
-        [Symbol.LPAR]: 1,
-    },
-    [Symbol.ARGS]: {
-        [Symbol.LPAR]: 2,
-        [Symbol.RPAR]: 3,
-        [Symbol.NUMBER]: 2,
-    },
-    [Symbol.ARG]: {
-        [Symbol.LPAR]: 5,
-        [Symbol.NUMBER]: 4,
-    },
-}
+const SEXPR_PARSER = new LLParser(LLGrammar.from_str(`
+S → SEXPR $
+SEXPR → LPAR IDENTIFIER ARGS RPAR
+ARGS → ARG ARGS
+ARGS → ε
+ARG → NUMBER
+ARG → SEXPR
+`,
+    Symbol.S))
 
 class SExprNode {
     constructor(identifier, args) {
@@ -103,9 +69,6 @@ function build_args(ll_args) {
     } else {
         return [build_arg(ll_args.children[0])].concat(build_args(ll_args.children[1]))
     }
-
-    console.log("args", ll_args)
-
 }
 
 function build_sexpr(ll_sexpr) {
@@ -122,7 +85,7 @@ export function parse_sexpr(sexpr) {
     console.log("tokens:", tokens)
 
     // Build an LL AST
-    const ll_ast = ll_parse(tokens, Symbol.S, PARSER_RULES, PARSER_TABLE)
+    const ll_ast = SEXPR_PARSER.parse(tokens)
     console.log("LL AST:", ll_ast)
 
     // Build S-expr AST
