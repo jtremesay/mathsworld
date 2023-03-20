@@ -17,15 +17,15 @@ function build_table(rules) {
 }
 
 function parse(tokens, symbol, rules, table) {
-    let token = tokens[0]
+    const token = tokens[0]
     if (token.kind == symbol) {
         tokens.shift()
 
         return new TerminalSymbol(symbol, token)
     } else {
         try {
-            let rule = table[symbol][token.kind]
-            let derivation = rules[rule][1]
+            const rule = table[symbol][token.kind]
+            const derivation = rules[rule][1]
 
             return new NonTerminalSymbol(
                 symbol,
@@ -39,6 +39,6 @@ function parse(tokens, symbol, rules, table) {
 
 export function ll_parse(tokens, start_symbol, rules, table) {
     // TODO: remove table from parameters and use build_table(rules)
-    // let table = build_table(rules)
+    // const table = build_table(rules)
     return parse(tokens, start_symbol, rules, table)
 }

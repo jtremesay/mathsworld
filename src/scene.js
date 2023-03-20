@@ -149,6 +149,6 @@ export class Scene {
 }
 
 export function load_scene(scene_text) {
-    let scene_sexpr = parse_sexpr(scene_text)
+    const scene_sexpr = parse_sexpr(scene_text)
     return Scene.from_sexpr(scene_sexpr)
 }

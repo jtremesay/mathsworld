@@ -9,15 +9,15 @@ function main() {
     const shader_editor = document.getElementById("shader_editor")
 
     // Create the render
-    let webgl_renderer = new WebGLRender(canvas)
+    const webgl_renderer = new WebGLRender(canvas)
 
     function rebuild_shader() {
         // Load the scene
         const scene_text = scene_editor.value
-        let scene = load_scene(scene_text)
+        const scene = load_scene(scene_text)
 
         // Generate the shader
-        let shader = generate_scene_shader(scene)
+        const shader = generate_scene_shader(scene)
         shader_editor.value = shader
 
         // Compile the scene shader and draw it

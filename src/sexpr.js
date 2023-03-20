@@ -89,7 +89,7 @@ class NumberNode {
 }
 
 function build_arg(ll_arg) {
-    let arg = ll_arg.children[0]
+    const arg = ll_arg.children[0]
     if (arg.symbol == Symbol.SEXPR) {
         return build_sexpr(arg)
     } else {
@@ -118,15 +118,15 @@ function build_s(ll_s) {
 
 export function parse_sexpr(sexpr) {
     // Tokenize the scene text
-    let tokens = Array.from(tokenize(sexpr, TOKEN_REGEXES, TokenKind.EOS, [TokenKind.SPACE]))
+    const tokens = Array.from(tokenize(sexpr, TOKEN_REGEXES, TokenKind.EOS, [TokenKind.SPACE]))
     console.log("tokens:", tokens)
 
     // Build an LL AST
-    let ll_ast = ll_parse(tokens, Symbol.S, PARSER_RULES, PARSER_TABLE)
+    const ll_ast = ll_parse(tokens, Symbol.S, PARSER_RULES, PARSER_TABLE)
     console.log("LL AST:", ll_ast)
 
     // Build S-expr AST
-    let sexpr_ast = build_s(ll_ast)
+    const sexpr_ast = build_s(ll_ast)
     console.log("S-expr AST:", sexpr_ast)
 
     return sexpr_ast

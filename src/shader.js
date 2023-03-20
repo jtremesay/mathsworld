@@ -72,7 +72,7 @@ function str_directional_light(light) {
 
 function str_lights(lights) {
     let str = "";
-    for (let light of lights) {
+    for (const light of lights) {
         if (light instanceof AmbiantLight) {
             str += `intensity += ${str_ambiant_light(light)};\n`
         } else if (light instanceof OmniDirectionalLight) {

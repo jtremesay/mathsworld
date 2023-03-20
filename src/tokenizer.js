@@ -11,11 +11,11 @@ export function* tokenize(stream, rules, eos_kind, skip_tokens) {
         // We do that by matching the remaing of the stream through all the 
         // declared regexes
         let token = null
-        for (let kind in rules) {
-            let regex = rules[kind]
-            let result = stream.match(regex)
+        for (const kind in rules) {
+            const regex = rules[kind]
+            const result = stream.match(regex)
             if (result != null) {
-                let text = result[0]
+                const text = result[0]
                 token = new Token(kind, text)
                 stream = stream.substring(text.length)
                 break
