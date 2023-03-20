@@ -33,39 +33,49 @@ class SExprNode {
         this.identifier = identifier
         this.args = args
     }
+
+    accept(visitor) {
+        visitor.visit_sexpr(this)
+    }
 }
 
 class LL2SEXPRVisitor {
-    visit_non_terminal_symbol(node) {
-        if (node.symbol == "S") {
-            return node.children[0].accept(this)
-        } else if (node.symbol == "SEXPR") {
-            return new SExprNode(node.children[1].accept(this), node.children[2].accept(this))
-        } else if (node.symbol == "ARGS") {
-            if (node.children.length == 0) {
-                return []
-            } else {
-                return [node.children[0].accept(this)].concat(node.children[1].accept(this))
-            }
-        } else if (node.symbol == "ARG") {
-            return node.children[0].accept(this)
-        }
+    visit_S(node) {
+        return node.children[0].accept(this)
+    }
 
-        throw new Error(`Unnsuported node ${node.symbol}`)
+    visit_SEXPR(node) {
+        return new SExprNode(node.children[1].accept(this), node.children[2].accept(this))
+    }
+
+    visit_ARGS(node) {
+        if (node.children.length == 0) {
+            return []
+        } else {
+            return [node.children[0].accept(this)].concat(node.children[1].accept(this))
+        }
+    }
+
+    visit_ARG(node) {
+        return node.children[0].accept(this)
+    }
+
+    visit_non_terminal_symbol(node) {
+        return this[`visit_${node.symbol}`](node)
+    }
+
+    visit_IDENTIFIER(node) {
+        return node.token.text
+    }
+
+    visit_NUMBER(node) {
+        return parseFloat(node.token.text)
     }
 
     visit_terminal_symbol(node) {
-        if (node.symbol == "IDENTIFIER") {
-            return node.token.text
-        } else if (node.symbol == "NUMBER") {
-            return parseFloat(node.token.text)
-        }
-
-        throw new Error(`Unnsuported node ${node.symbol}`)
+        return this[`visit_${node.symbol}`](node)
     }
 }
-
-
 
 export function parse_sexpr(sexpr) {
     // Tokenize the scene text
