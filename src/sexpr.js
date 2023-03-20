@@ -18,19 +18,6 @@ const TOKEN_REGEXES = {
     [TokenKind.IDENTIFIER]: /^\w\S*/,
 }
 
-const Symbol = {
-    [TokenKind.EOS]: TokenKind.EOS,
-    [TokenKind.LPAR]: TokenKind.LPAR,
-    [TokenKind.RPAR]: TokenKind.RPAR,
-    [TokenKind.IDENTIFIER]: TokenKind.IDENTIFIER,
-    [TokenKind.NUMBER]: TokenKind.NUMBER,
-    S: "S", // Start symbol
-    SEXPR: "SEXPR",
-    EXPR: "EXPR",
-    ARGS: "ARGS",
-    ARG: "ARG",
-}
-
 const SEXPR_PARSER = new LLParser(LLGrammar.from_str(`
 S → SEXPR $
 SEXPR → LPAR IDENTIFIER ARGS RPAR
@@ -39,7 +26,7 @@ ARGS → ε
 ARG → NUMBER
 ARG → SEXPR
 `,
-    Symbol.S))
+    "S"))
 
 class SExprNode {
     constructor(identifier, args) {
@@ -48,36 +35,37 @@ class SExprNode {
     }
 }
 
-class NumberNode {
-    constructor(value) {
-        this.value = value
+class LL2SEXPRVisitor {
+    visit_non_terminal_symbol(node) {
+        if (node.symbol == "S") {
+            return node.children[0].accept(this)
+        } else if (node.symbol == "SEXPR") {
+            return new SExprNode(node.children[1].accept(this), node.children[2].accept(this))
+        } else if (node.symbol == "ARGS") {
+            if (node.children.length == 0) {
+                return []
+            } else {
+                return [node.children[0].accept(this)].concat(node.children[1].accept(this))
+            }
+        } else if (node.symbol == "ARG") {
+            return node.children[0].accept(this)
+        }
+
+        throw new Error(`Unnsuported node ${node.symbol}`)
+    }
+
+    visit_terminal_symbol(node) {
+        if (node.symbol == "IDENTIFIER") {
+            return node.token.text
+        } else if (node.symbol == "NUMBER") {
+            return parseFloat(node.token.text)
+        }
+
+        throw new Error(`Unnsuported node ${node.symbol}`)
     }
 }
 
-function build_arg(ll_arg) {
-    const arg = ll_arg.children[0]
-    if (arg.symbol == Symbol.SEXPR) {
-        return build_sexpr(arg)
-    } else {
-        return parseFloat(arg.token.text)
-    }
-}
 
-function build_args(ll_args) {
-    if (ll_args.children.length == 0) {
-        return []
-    } else {
-        return [build_arg(ll_args.children[0])].concat(build_args(ll_args.children[1]))
-    }
-}
-
-function build_sexpr(ll_sexpr) {
-    return new SExprNode(ll_sexpr.children[1].token.text, build_args(ll_sexpr.children[2]))
-}
-
-function build_s(ll_s) {
-    return build_sexpr(ll_s.children[0])
-}
 
 export function parse_sexpr(sexpr) {
     // Tokenize the scene text
@@ -89,7 +77,8 @@ export function parse_sexpr(sexpr) {
     console.log("LL AST:", ll_ast)
 
     // Build S-expr AST
-    const sexpr_ast = build_s(ll_ast)
+    const ll2sexpr_visitor = new LL2SEXPRVisitor()
+    const sexpr_ast = ll_ast.accept(ll2sexpr_visitor)
     console.log("S-expr AST:", sexpr_ast)
 
     return sexpr_ast

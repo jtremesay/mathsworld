@@ -189,7 +189,7 @@ class NonTerminalSymbol {
     }
 
     accept(visitor) {
-        visitor.visit_non_terminal_symbol(this)
+        return visitor.visit_non_terminal_symbol(this)
     }
 }
 
@@ -200,7 +200,7 @@ class TerminalSymbol {
     }
 
     accept(visitor) {
-        visitor.visit_terminal_symbol(this)
+        return visitor.visit_terminal_symbol(this)
     }
 }
 
