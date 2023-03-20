@@ -35,7 +35,7 @@ class SExprNode {
     }
 
     accept(visitor) {
-        visitor.visit_sexpr(this)
+        return visitor.visit(this)
     }
 }
 

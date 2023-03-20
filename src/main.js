@@ -15,6 +15,7 @@ function main() {
         // Load the scene
         const scene_text = scene_editor.value
         const scene = load_scene(scene_text)
+        console.log("scene:", scene)
 
         // Generate the shader
         const shader = generate_scene_shader(scene)

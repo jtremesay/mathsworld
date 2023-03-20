@@ -7,12 +7,8 @@ export class Vector3 {
         this.z = z
     }
 
-    static from_sexpr(sexpr) {
-        return new Vector3(
-            sexpr.args[0],
-            sexpr.args[1],
-            sexpr.args[2],
-        )
+    accept(visitor) {
+        return visitor.visit(this)
     }
 }
 
@@ -22,11 +18,8 @@ export class Camera {
         this.view_port = view_port
     }
 
-    static from_sexpr(sexpr) {
-        return new Camera(
-            Vector3.from_sexpr(sexpr.args[0]),
-            Vector3.from_sexpr(sexpr.args[1]),
-        )
+    accept(visitor) {
+        return visitor.visit(this)
     }
 }
 
@@ -36,11 +29,8 @@ export class Material {
         this.specular = specular
     }
 
-    static from_sexpr(sexpr) {
-        return new Material(
-            Vector3.from_sexpr(sexpr.args[0]),
-            sexpr.args[1]
-        )
+    accept(visitor) {
+        return visitor.visit(this)
     }
 }
 
@@ -51,12 +41,8 @@ export class Sphere {
         this.material = material
     }
 
-    static from_sexpr(sexpr) {
-        return new Sphere(
-            Vector3.from_sexpr(sexpr.args[0]),
-            sexpr.args[1],
-            Material.from_sexpr(sexpr.args[2])
-        )
+    accept(visitor) {
+        return visitor.visit(this)
     }
 }
 
@@ -65,16 +51,8 @@ export class Union {
         this.nodes = nodes
     }
 
-    static from_sexpr(sexpr) {
-        return new Union(sexpr.args[0].args.map(node_from_sexpr))
-    }
-}
-
-export function node_from_sexpr(sexpr) {
-    if (sexpr.identifier == "union") {
-        return Union.from_sexpr(sexpr)
-    } else {
-        return Sphere.from_sexpr(sexpr)
+    accept(visitor) {
+        return visitor.visit(this)
     }
 }
 
@@ -83,10 +61,8 @@ export class AmbiantLight {
         this.intensity = intensity
     }
 
-    static from_sexpr(sexpr) {
-        return new AmbiantLight(
-            sexpr.args[0],
-        )
+    accept(visitor) {
+        return visitor.visit(this)
     }
 }
 
@@ -96,11 +72,9 @@ export class OmniDirectionalLight {
 
         this.position = position
     }
-    static from_sexpr(sexpr) {
-        return new OmniDirectionalLight(
-            sexpr.args[0],
-            Vector3.from_sexpr(sexpr.args[1]),
-        )
+
+    accept(visitor) {
+        return visitor.visit(this)
     }
 }
 
@@ -110,26 +84,9 @@ export class DirectionalLight {
         this.direction = direction
     }
 
-    static from_sexpr(sexpr) {
-        return new DirectionalLight(
-            sexpr.args[0],
-            Vector3.from_sexpr(sexpr.args[1]),
-        )
+    accept(visitor) {
+        return visitor.visit(this)
     }
-}
-
-export function light_from_sexpr(sexpr) {
-    if (sexpr.identifier == "ambiant_light") {
-        return AmbiantLight.from_sexpr(sexpr)
-    } else if (sexpr.identifier == "omni_directional_light") {
-        return OmniDirectionalLight.from_sexpr(sexpr)
-    } else {
-        return DirectionalLight.from_sexpr(sexpr)
-    }
-}
-
-export function lights_from_sexpr(sexpr) {
-    return sexpr.args.map(light_from_sexpr)
 }
 
 export class Scene {
@@ -139,16 +96,98 @@ export class Scene {
         this.lights = lights
     }
 
-    static from_sexpr(sexpr) {
-        return new Scene(
-            Camera.from_sexpr(sexpr.args[0]),
-            node_from_sexpr(sexpr.args[1]),
-            lights_from_sexpr(sexpr.args[2])
-        )
+    accept(visitor) {
+        return visitor.visit(this)
     }
 }
 
+class SceneDeserializerVisitor {
+    visit_list(node) {
+        return Array.from(node.args.map(c => c.accept(this)))
+    }
+
+    visit_vector3(node) {
+        return new Vector3(
+            node.args[0],
+            node.args[1],
+            node.args[2],
+        )
+    }
+
+    visit_color(node) {
+        return this.visit_vector3(node)
+    }
+
+    visit_camera(node) {
+        return new Camera(
+            node.args[0].accept(this),
+            node.args[1].accept(this),
+        )
+    }
+
+    visit_union(node) {
+        return new Union(node.args[0].accept(this))
+    }
+
+    visit_material(node) {
+        return new Material(
+            node.args[0].accept(this),
+            node.args[1],
+        )
+    }
+
+    visit_sphere(node) {
+        return new Sphere(
+            node.args[0].accept(this),
+            node.args[1],
+            node.args[2].accept(this),
+        )
+    }
+
+    visit_ambiant_light(node) {
+        return new AmbiantLight(
+            node.args[0],
+        )
+    }
+
+    visit_omni_directional_light(node) {
+        return new OmniDirectionalLight(
+            node.args[0],
+            node.args[1].accept(this),
+        )
+    }
+
+    visit_directional_light(node) {
+        return new OmniDirectionalLight(
+            node.args[0],
+            node.args[1].accept(this),
+        )
+    }
+
+    visit_scene(node) {
+        return new Scene(
+            node.args[0].accept(this),
+            node.args[1].accept(this),
+            node.args[2].accept(this),
+        )
+    }
+
+    visit(node) {
+        let method = this[`visit_${node.identifier}`]
+        if (method === undefined) {
+            throw new Error(`Unimplemented method for ${node.identifier}`)
+        }
+
+        return method.bind(this)(node)
+    }
+}
+
+
 export function load_scene(scene_text) {
     const scene_sexpr = parse_sexpr(scene_text)
-    return Scene.from_sexpr(scene_sexpr)
+
+    let scene_visitor = new SceneDeserializerVisitor()
+
+    return scene_sexpr.accept(scene_visitor)
 }
+
