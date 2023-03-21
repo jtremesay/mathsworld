@@ -93,7 +93,7 @@ export function parse_sexpr(sexpr) {
 
     // Build S-expr AST
     const ll2sexpr_visitor = new LL2SEXPRVisitor()
-    const sexpr_ast = ll_ast.accept(ll2sexpr_visitor)
+    const sexpr_ast = ll2sexpr_visitor.visit(ll_ast)
     console.log("S-expr AST:", sexpr_ast)
 
     return sexpr_ast

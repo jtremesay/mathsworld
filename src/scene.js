@@ -101,7 +101,7 @@ export class Scene {
     }
 }
 
-class SceneDeserializerVisitor {
+class SExprDeserializerVisitor {
     visit_list(node) {
         return Array.from(node.args.map(c => c.accept(this)))
     }
@@ -186,8 +186,8 @@ class SceneDeserializerVisitor {
 export function load_scene(scene_text) {
     const scene_sexpr = parse_sexpr(scene_text)
 
-    let scene_visitor = new SceneDeserializerVisitor()
+    let visitor = new SExprDeserializerVisitor()
 
-    return scene_sexpr.accept(scene_visitor)
+    return visitor.visit(scene_sexpr)
 }
 
