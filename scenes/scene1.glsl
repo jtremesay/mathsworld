@@ -1,7 +1,3 @@
-
-precision highp float;
-uniform vec2 iResolution;
-
 const float INFINITY = 1e9;
 
 struct Material {
@@ -148,12 +144,13 @@ intensity += directional_light(
     return intensity;
 }
 
-void main() {
+void mainImage(out vec4 fragColor, in vec2 fragCoord)
+{
     // Relative position on the screen
     // (0, 0) = bottom left
     // (1, 1) = top right
     // (1, 0) = bottom right
-    vec2 uv = gl_FragCoord.xy / iResolution;
+    vec2 uv = fragCoord.xy / iResolution.yy;
 
     // View port
     vec3 view_port = vec3(1.00000000, 1.00000000, 1.00000000);
@@ -170,7 +167,7 @@ void main() {
 
     Hit hit = scene(camera, direction);
     if (hit.distance < INFINITY) {
-        gl_FragColor = vec4(
+        fragColor = vec4(
             hit.material.color * compute_lights(
                 hit.position, 
                 hit.normal, 
@@ -180,7 +177,6 @@ void main() {
             1.0
         );
     } else {
-        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+        fragColor = vec4(1.0, 1.0, 1.0, 1.0);
     }
 }
-    
