@@ -72,8 +72,13 @@ class LL2SEXPRVisitor {
         return parseFloat(node.token.text)
     }
 
-    visit_terminal_symbol(node) {
-        return this[`visit_${node.symbol}`](node)
+    visit(node) {
+        let method = this[`visit_${node.symbol}`]
+        if (method === undefined) {
+            throw new Error(`Unimplemented method for ${node.symbol}`)
+        }
+
+        return method.bind(this)(node)
     }
 }
 
