@@ -188,12 +188,13 @@ float compute_lights(vec3 position, vec3 normal, float specular, vec3 inverse_di
     return intensity;
 }
 
-void main() {
+void mainImage(out vec4 fragColor, in vec2 fragCoord)
+{
     // Relative position on the screen
     // (0, 0) = bottom left
     // (1, 1) = top right
     // (1, 0) = bottom right
-    vec2 uv = gl_FragCoord.xy / iResolution;
+    vec2 uv = fragCoord.xy / iResolution.yy;
 
     // View port
     vec3 view_port = ${str_vector3(scene.camera.view_port)};
@@ -210,7 +211,7 @@ void main() {
 
     Hit hit = scene(camera, direction);
     if (hit.distance < INFINITY) {
-        gl_FragColor = vec4(
+        fragColor = vec4(
             hit.material.color * compute_lights(
                 hit.position, 
                 hit.normal, 
@@ -220,9 +221,16 @@ void main() {
             1.0
         );
     } else {
-        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+        fragColor = vec4(1.0, 1.0, 1.0, 1.0);
     }
 }
+
+void main() {
+    vec4 color;
+    mainImage(color, gl_FragCoord.xy);
+    gl_FragColor = color;
+}
+
     `
 
     return shader

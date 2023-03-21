@@ -4,9 +4,10 @@ function loadShader(gl, type, source) {
     gl.compileShader(shader)
 
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        const error = gl.getShaderInfoLog(shader)
         gl.deleteShader(shader)
         throw new Error(
-            `An error occurred compiling the shaders: ${gl.getShaderInfoLog(shader)}`
+            `An error occurred compiling the shaders: ${error}`
         )
     }
 
