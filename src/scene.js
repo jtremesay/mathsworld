@@ -56,6 +56,16 @@ export class Union {
     }
 }
 
+export class Intersect {
+    constructor(nodes) {
+        this.nodes = nodes
+    }
+
+    accept(visitor) {
+        return visitor.visit(this)
+    }
+}
+
 export class AmbiantLight {
     constructor(intensity) {
         this.intensity = intensity
@@ -127,6 +137,10 @@ class SExprDeserializerVisitor {
 
     visit_union(node) {
         return new Union(Array.from(node.args.map(n => this.visit(n))))
+    }
+
+    visit_intersect(node) {
+        return new Intersect(Array.from(node.args.map(n => this.visit(n))))
     }
 
     visit_material(node) {

@@ -1,29 +1,34 @@
-import { AmbiantLight, DirectionalLight, OmniDirectionalLight, Sphere, Union } from "./scene.js"
+import { AmbiantLight, DirectionalLight, OmniDirectionalLight, Sphere, Intersect, Union } from "./scene.js"
 
 function str_vector3(v) {
     return `vec3(${v.x.toFixed(8)}, ${v.y.toFixed(8)}, ${v.z.toFixed(8)})`
 }
 
-function r_str_union(nodes) {
+function r_str_sep_op(op, nodes) {
     if (nodes.length == 0) {
         return `0.0`
     } else if (nodes.length == 1) {
         return str_node(nodes[0])
     } else {
-        return `sdf_union(
+        return `sdf_${op}(
             ${str_node(nodes[0])}, 
-            ${r_str_union(nodes.slice(1))}
+            ${r_str_sep_op(op, nodes.slice(1))}
         )`
     }
 }
 
 function str_union(node) {
-    return r_str_union(node.nodes)
+    return r_str_sep_op("union", node.nodes)
+}
+
+function str_intersect(node) {
+    return r_str_sep_op("intersect", node.nodes)
 }
 
 function str_material(m) {
     return `Material(${str_vector3(m.color)}, ${m.specular.toFixed(8)})`
 }
+
 function str_sphere(node) {
     return `sdf_sphere(
             camera,
@@ -37,7 +42,9 @@ function str_sphere(node) {
 function str_node(node) {
     if (node instanceof Union) {
         return str_union(node)
-    } if (node instanceof Sphere) {
+    } else if (node instanceof Intersect) {
+        return str_intersect(node)
+    } else if (node instanceof Sphere) {
         return str_sphere(node)
     } else {
         throw new Error(`Unsuppored node type ${typeof node}`)
@@ -117,10 +124,30 @@ const Hit NO_HIT = Hit(
 );
 
 Hit sdf_union(Hit a, Hit b) {
+    if (a.distance < 0.0) {
+        return b;
+    } else if (b.distance < 0.0) {
+        return a;
+    }
+    
     if (a.distance <= b.distance) {
         return a;
     } else {
         return b;
+    };
+}
+
+Hit sdf_intersect(Hit a, Hit b) {
+    if (a.distance < 0.0) {
+        return b;
+    } else if (b.distance < 0.0) {
+        return a;
+    }
+
+    if (a.distance <= b.distance) {
+        return b;
+    } else {
+        return a;
     };
 }
 
