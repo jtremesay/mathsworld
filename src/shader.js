@@ -124,12 +124,6 @@ const Hit NO_HIT = Hit(
 );
 
 Hit sdf_union(Hit a, Hit b) {
-    if (a.distance < 0.0) {
-        return b;
-    } else if (b.distance < 0.0) {
-        return a;
-    }
-    
     if (a.distance <= b.distance) {
         return a;
     } else {
@@ -138,12 +132,6 @@ Hit sdf_union(Hit a, Hit b) {
 }
 
 Hit sdf_intersect(Hit a, Hit b) {
-    if (a.distance < 0.0) {
-        return b;
-    } else if (b.distance < 0.0) {
-        return a;
-    }
-
     if (a.distance <= b.distance) {
         return b;
     } else {
@@ -164,9 +152,6 @@ Hit sdf_sphere(vec3 camera, vec3 ray, vec3 position, float radius, Material mate
     float d1 = (-b + sqrt(delta)) / (a + a);
     float d2 = (-b - sqrt(delta)) / (a + a);
     float d = min(d1, d2);
-    if (d < 0.0) {
-        return NO_HIT;
-    }
 
     vec3 hit_position = camera + ray * d;
     vec3 normal = normalize(hit_position - position);    
