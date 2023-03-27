@@ -124,6 +124,12 @@ const Hit NO_HIT = Hit(
 );
 
 Hit sdf_union(Hit a, Hit b) {
+    if (a.distance < 0.0) {
+        return b;
+    } else if (b.distance < 0.0) {
+        return a;
+    }
+
     if (a.distance <= b.distance) {
         return a;
     } else {
@@ -132,6 +138,12 @@ Hit sdf_union(Hit a, Hit b) {
 }
 
 Hit sdf_intersect(Hit a, Hit b) {
+    if (a.distance < 0.0) {
+        return b;
+    } else if (b.distance < 0.0) {
+        return a;
+    }
+
     if (a.distance <= b.distance) {
         return b;
     } else {
