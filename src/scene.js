@@ -126,7 +126,7 @@ class SExprDeserializerVisitor {
     }
 
     visit_union(node) {
-        return new Union(this.visit(node.args[0]))
+        return new Union(Array.from(node.args.map(n => this.visit(n))))
     }
 
     visit_material(node) {
