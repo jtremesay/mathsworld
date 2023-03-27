@@ -41,23 +41,26 @@ class SExprNode {
 
 class LL2SEXPRVisitor {
     visit_S(node) {
-        return node.children[0].accept(this)
+        return this.visit(node.children[0])
     }
 
     visit_SEXPR(node) {
-        return new SExprNode(node.children[1].accept(this), node.children[2].accept(this))
+        return new SExprNode(
+            this.visit(node.children[1]),
+            this.visit(node.children[2])
+        )
     }
 
     visit_ARGS(node) {
         if (node.children.length == 0) {
             return []
-        } else {
-            return [node.children[0].accept(this)].concat(node.children[1].accept(this))
         }
+
+        return [this.visit(node.children[0])].concat(this.visit(node.children[1]))
     }
 
     visit_ARG(node) {
-        return node.children[0].accept(this)
+        return this.visit(node.children[0])
     }
 
     visit_non_terminal_symbol(node) {

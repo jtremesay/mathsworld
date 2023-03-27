@@ -103,7 +103,7 @@ export class Scene {
 
 class SExprDeserializerVisitor {
     visit_list(node) {
-        return Array.from(node.args.map(c => c.accept(this)))
+        return Array.from(node.args.map(c => this.visit(c)))
     }
 
     visit_vector3(node) {
@@ -120,27 +120,27 @@ class SExprDeserializerVisitor {
 
     visit_camera(node) {
         return new Camera(
-            node.args[0].accept(this),
-            node.args[1].accept(this),
+            this.visit(node.args[0]),
+            this.visit(node.args[1]),
         )
     }
 
     visit_union(node) {
-        return new Union(node.args[0].accept(this))
+        return new Union(this.visit(node.args[0]))
     }
 
     visit_material(node) {
         return new Material(
-            node.args[0].accept(this),
+            this.visit(node.args[0]),
             node.args[1],
         )
     }
 
     visit_sphere(node) {
         return new Sphere(
-            node.args[0].accept(this),
+            this.visit(node.args[0]),
             node.args[1],
-            node.args[2].accept(this),
+            this.visit(node.args[2]),
         )
     }
 
@@ -153,22 +153,22 @@ class SExprDeserializerVisitor {
     visit_omni_directional_light(node) {
         return new OmniDirectionalLight(
             node.args[0],
-            node.args[1].accept(this),
+            this.visit(node.args[1]),
         )
     }
 
     visit_directional_light(node) {
         return new OmniDirectionalLight(
             node.args[0],
-            node.args[1].accept(this),
+            this.visit(node.args[1]),
         )
     }
 
     visit_scene(node) {
         return new Scene(
-            node.args[0].accept(this),
-            node.args[1].accept(this),
-            node.args[2].accept(this),
+            this.visit(node.args[0]),
+            this.visit(node.args[1]),
+            this.visit(node.args[2]),
         )
     }
 
